@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 //import styled from 'styled-components';
-//import './App.scss';
+import './App.scss';
 
 // const Container = styled.div`
 //   @apply flex flex-col items-center justify-center min-h-screen bg-gray-100;
@@ -9,7 +9,7 @@ import React, { useState } from 'react';
 export default function App() {
     const [message, setMessage] = useState('Üdv a Hidden Game mintában!');
     return (
-        <div>
+        <div className="app-container">
             <h1 className="text-3xl font-bold mb-4">Hidden Game</h1>
             <p className="mb-4">{message}</p>
             <button

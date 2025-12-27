@@ -1,5 +1,8 @@
 // Shared SCSS styles and mixins for mono-game apps
 
+// Import mixins using modern @use syntax
+@use 'mixins';
+
 // Example mixin
 @mixin default-mixin() {
     // ...
