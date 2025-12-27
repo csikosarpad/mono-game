@@ -1,0 +1,19 @@
+{
+  "name": "mono-game",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Monorepo for web-based (React, Vite, Node.js) games.",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "prettier": "prettier --write .",
+    "test": "vitest"
+  },
+  "devDependencies": {
+    "prettier": "^3.0.0",
+    "typescript": "^5.0.0",
+    "vitest": "^1.0.0"
+  }
+}
