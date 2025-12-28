@@ -2,11 +2,7 @@
   "extends": "../../tsconfig.json",
   "compilerOptions": {
     "jsx": "react-jsx",
-    "paths": {
-      "@mono-game/shared": ["../../packages/shared"],
-      "@mono-game/shared-ui": ["../../packages/shared-ui"],
-      "@mono-game/shared-styles": ["../../packages/shared-styles"]
-    }
+    "types": ["vitest/globals"]
   },
-  "include": ["src", "vite.config.mts", "index.html"]
+  "include": ["src/**/*", "src/**/*.test.ts", "src/**/*.test.tsx"]
 }

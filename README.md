@@ -64,6 +64,8 @@ pnpm install
 ### Testing
 
 - Run `pnpm test` to execute unit tests
+- Run `pnpm test:coverage` to run tests with coverage reporting
+- Run `pnpm coverage:open` to open the HTML coverage report in your browser
 
 ### SonarQube
 

@@ -4,6 +4,10 @@
   "main": "index.ts",
   "types": "index.ts",
   "private": true,
+  "dependencies": {
+    "clsx": "^2.1.1",
+    "tailwind-merge": "^2.5.5"
+  },
   "devDependencies": {
     "@vitejs/plugin-react": "^5.1.2"
   }

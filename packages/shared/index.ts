@@ -1,3 +1,3 @@
 // Shared components and utilities for mono-game apps
 
-export { };
+export { cn } from './utility/style';
