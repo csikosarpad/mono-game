@@ -29,15 +29,29 @@ export default function App() {
     const initialObjects = [
         { id: "key", name: "Régi kulcs", x: 0.18, y: 0.68 },
         { id: "book", name: "Könyv", x: 0.62, y: 0.4 },
+        { id: "moon", name: "Hold", x: 0.55, y: 0.12 },
         { id: "hat", name: "Kalap", x: 0.8, y: 0.22 }
     ];
 
+    const generateCoords = () => {
+        const maxCoords = initialObjects.length;
+        const coords = [];
+        for (let i = 0; i < maxCoords; i++) {
+            const x = +(Math.random() * (0.98 - 0.02) + 0.02).toFixed(2);
+            const y = +(Math.random() * (0.98 - 0.02) + 0.02).toFixed(2);
+            coords.push({ x, y });
+        }
+        return coords;
+    };
+
+
     const [objects, setObjects] = useState(initialObjects.map(o => ({ ...o, found: false })));
-    const [startTime, setStartTime] = useState(null);
+    const [startTime, setStartTime] = useState<number | null>(null);
     const [timeElapsed, setTimeElapsed] = useState(0);
     const [message, setMessage] = useState("");
-    const imgRef = useRef(null);
-    const timerRef = useRef(null);
+
+    const imgRef = useRef<HTMLImageElement | null>(null);
+    const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
     useEffect(() => {
         if (startTime) {
@@ -45,24 +59,35 @@ export default function App() {
                 setTimeElapsed(Math.floor((Date.now() - startTime) / 1000));
             }, 250);
         }
-        return () => clearInterval(timerRef.current);
+        return () => {
+            if (timerRef.current) {
+                clearInterval(timerRef.current);
+            }
+        };
     }, [startTime]);
 
     useEffect(() => {
         if (objects.every(o => o.found)) {
             setMessage(`Gratulálok! Megtaláltál minden tárgyat ${timeElapsed}s alatt.`);
-            clearInterval(timerRef.current);
+            if (timerRef.current) {
+                clearInterval(timerRef.current);
+            }
         }
     }, [objects, timeElapsed]);
 
     function startGame() {
+        const coords = generateCoords();
+        initialObjects.forEach((obj, index) => {
+            obj.x = coords[index].x;
+            obj.y = coords[index].y;
+        });
         setObjects(initialObjects.map(o => ({ ...o, found: false })));
         setStartTime(Date.now());
         setTimeElapsed(0);
         setMessage("");
     }
 
-    function handleClick(e) {
+    function handleClick(e: React.MouseEvent<HTMLImageElement>) {
         if (!imgRef.current) return;
         const rect = imgRef.current.getBoundingClientRect();
         const clickX = (e.clientX - rect.left) / rect.width;
@@ -122,9 +147,11 @@ export default function App() {
                                 left: `${o.x * 100}%`,
                                 top: `${o.y * 100}%`,
                                 transform: 'translate(-50%, -50%)',
-                                pointerEvents: 'none'
+                                pointerEvents: 'none',
+                                color: o.found ? 'green' : 'wheat',
+                                opacity: o.found ? 1 : 0.5
                             }}
-                        >
+                        >{!o.found && <span>✓</span>}
                             {/* show small indicator when found */}
                             {o.found && (
                                 <div className="w-6 h-6 rounded-full flex items-center justify-center text-white text-xs font-bold" style={{ background: 'rgba(34,197,94,0.9)' }}>✓</div>
