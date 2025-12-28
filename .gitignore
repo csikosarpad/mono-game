@@ -10,6 +10,7 @@ logs
 .vscode
 .idea
 .DS_Store
+.vite
 
 # Build
 /dist
