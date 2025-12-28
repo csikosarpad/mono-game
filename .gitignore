@@ -15,6 +15,8 @@ logs
 # Build
 /dist
 /build
+/apps/*/dist
+/apps/*/build
 
 # Testing
 /coverage
