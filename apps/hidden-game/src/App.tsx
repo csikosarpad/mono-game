@@ -2,31 +2,15 @@ import React, { useEffect, useRef, useState, useCallback, useMemo } from 'react'
 import { cn } from '@mono-game/shared';
 import './App.scss';
 
-// Configuration constants
-const CONFIG = {
-    // Image URL - extracted from hardcoded value for better maintainability
-    SCENE_URL: "https://images.unsplash.com/photo-1503264116251-35a269479413?auto=format&fit=crop&w=1400&q=80",
-
-    // Game difficulty settings
-    HIT_TOLERANCE: 0.06, // Distance tolerance for object detection
-    MAX_COORDINATE: 0.98,
-    MIN_COORDINATE: 0.02,
-
-    // UI timing
-    SUCCESS_MESSAGE_DURATION: 900,
-    ERROR_MESSAGE_DURATION: 700,
-
-    // Coordinate precision
-    COORDINATE_PRECISION: 2
-} as const;
-
 // Type definitions for better type safety
 interface GameObject {
     id: string;
     name: string;
     x: number;
     y: number;
+    rotation?: number;
     found: boolean;
+    image?: string; // Optional image path for local assets
 }
 
 interface Coordinate {
@@ -34,12 +18,40 @@ interface Coordinate {
     y: number;
 }
 
-// Initial game objects configuration
+// Configuration constants
+const CONFIG = {
+    // Image URL - can be local or remote
+    //SCENE_URL: "https://images.unsplash.com/photo-1503264116251-35a269479413?auto=format&fit=crop&w=1400&q=80",
+    SCENE_URL: "./images/map/camp2_1980.png", // Changed to local JPG
+
+    // Game difficulty settings
+    HIT_TOLERANCE: 0.06, // Distance tolerance for object detection
+    MAX_COORDINATE: 0.98,
+    MIN_COORDINATE: 0.02,
+
+    // UI timing
+    SUCCESS_MESSAGE_DURATION: 2000,
+    ERROR_MESSAGE_DURATION: 700,
+
+    // Coordinate precision
+    COORDINATE_PRECISION: 2
+} as const;
+
+// Initial game objects configuration with image references
 const INITIAL_OBJECTS: Omit<GameObject, 'found'>[] = [
-    { id: "key", name: "Régi kulcs", x: 0.18, y: 0.68 },
-    { id: "book", name: "Könyv", x: 0.62, y: 0.4 },
-    { id: "moon", name: "Hold", x: 0.55, y: 0.12 },
-    { id: "hat", name: "Kalap", x: 0.8, y: 0.22 }
+    { id: "backpack", name: "Hátizsák", x: 0.41, y: 0.52, image: "./images/svg/backpack.svg" },
+    { id: "backpack_blue", name: "Kék hátizsák", x: 0.21, y: 0.52, image: "./images/svg/backpack_blue.svg" },
+    { id: "binoculars", name: "Távcső", x: 0.32, y: 0.28, image: "./images/svg/binoculars.svg" },
+    { id: "boots", name: "Bakancs", x: 0.85, y: 0.65, image: "./images/svg/boots.svg" },
+    { id: "bottle", name: "Kulacs", x: 0.55, y: 0.15, image: "./images/svg/bottle.svg" },
+    { id: "lamp2", name: "Lámpa", x: 0.18, y: 0.72, image: "./images/svg/lamp2.svg" },
+    { id: "campfire", name: "Tábortűz", x: 0.11, y: 0.42, image: "./images/svg/campfire.svg" },
+    { id: "piknik_kosar", name: "Piknik kosár", x: 0.75, y: 0.33, image: "./images/svg/piknik_kosar.svg" },
+    { id: "sajt", name: "Sajt", x: 0.36, y: 0.58, image: "./images/svg/sajt.svg" },
+    { id: "szendvics", name: "Szendvics", x: 0.26, y: 0.78, image: "./images/svg/szendvics.svg" },
+    { id: "termosz", name: "Termosz", x: 0.64, y: 0.18, image: "./images/svg/termosz.svg" },
+    { id: "wrench", name: "Kulcs", x: 0.47, y: 0.39, image: "./images/svg/wrench.svg" },
+
 ];
 
 export default function App() {
@@ -140,7 +152,8 @@ export default function App() {
     // Game completion logic
     useEffect(() => {
         if (allObjectsFound && isGameActive) {
-            setMessage(`Gratulálok! Megtaláltál minden tárgyat ${timeElapsed}s alatt.`);
+            //setMessage(`Gratulálok! Megtaláltál minden tárgyat ${timeElapsed}s alatt.`);
+            messageTimeoutRef.current = setTimeout(() => setMessage(`Gratulálok! Megtaláltál minden tárgyat ${timeElapsed}s alatt.`), CONFIG.SUCCESS_MESSAGE_DURATION);
             setIsGameActive(false);
 
             if (timerRef.current) {
@@ -168,6 +181,7 @@ export default function App() {
             ...obj,
             x: coords[index].x,
             y: coords[index].y,
+            rotation: Math.floor(Math.random() * 360),
             found: false
         }));
 
@@ -222,7 +236,7 @@ export default function App() {
         }
     }, [isGameActive]);
 
-    // Render object markers
+    // Render object markers with images
     const renderObjectMarkers = useMemo(() => {
         return objects.map(obj => (
             <div
@@ -231,37 +245,55 @@ export default function App() {
                 style={{
                     left: `${obj.x * 100}%`,
                     top: `${obj.y * 100}%`,
-                    color: obj.found ? 'green' : 'wheat',
-                    opacity: obj.found ? 1 : 0.5
+                    //opacity: obj.found ? 1 : 0.5
                 }}
                 aria-hidden="true"
             >
                 {obj.found ? (
-                    <div
-                        className="w-6 h-6 rounded-full flex items-center justify-center text-white text-xs font-bold"
-                        style={{ background: 'rgba(34,197,94,0.9)' }}
-                        title={`Talált: ${obj.name}`}
-                    >
-                        ✓
-                    </div>
+                    // <img src={obj.image}
+                    //     alt={obj.name}
+                    //     className={cn("w-16 h-16 object-contain scale-120",
+                    //         "animate-pulse",
+                    //         `rotate-[${obj.rotation}deg]`,
+                    //     )}
+                    //     title={`Talált: ${obj.name}`}
+                    //     style={{ filter: 'drop-shadow(0 2px 2px rgba(255,255,255,0.95))' }}
+                    // />
+                    <></>
                 ) : (
-                    <span className="text-xs text-white opacity-90">✓</span>
+                    obj.image ? (
+                        <img
+                            src={obj.image}
+                            alt={obj.name}
+                            className={cn(`w-16 h-16 object-contain rotate-[${obj.rotation}deg]`)}
+                            style={{ color: 'white', filter: 'drop-shadow(0 2px 2px rgba(255,255,255,0.3))' }}
+                        />
+                    ) : (
+                        <span className="text-xs text-white opacity-90">✓</span>
+                    )
                 )}
             </div>
         ));
     }, [objects]);
 
-    // Render object list
+    // Render object list with images
     const renderObjectList = useMemo(() => {
         return objects.map(obj => (
             <li
                 key={obj.id}
                 className={cn(
-                    "transition-colors duration-200",
-                    obj.found ? 'line-through text-gray-400' : 'text-gray-700'
+                    "transition-colors duration-200 flex items-center gap-2",
+                    obj.found ? 'line-through text-gray-400' : 'text-gray-900'
                 )}
             >
-                {obj.name}
+                {obj.image && (
+                    <img
+                        src={obj.image}
+                        alt={obj.name}
+                        className="w-6 h-6 object-contain"
+                    />
+                )}
+                <span>{obj.name}</span>
             </li>
         ));
     }, [objects]);
@@ -317,6 +349,14 @@ export default function App() {
 
                     {/* Object markers */}
                     {renderObjectMarkers}
+                    {message && (
+                        <div
+                            className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-black bg-opacity-60 text-white px-4 py-2 rounded text-center text-xl font-medium"
+                        >
+                            {message}
+                        </div>
+                    )}
+
                 </div>
 
                 <aside className="mt-3 p-3 bg-white rounded shadow">
@@ -339,6 +379,7 @@ export default function App() {
                 <footer className="mt-4 text-xs text-gray-500">
                     <p>Tippek: A találati pontosság a <code className="bg-gray-100 px-1 rounded">HIT_TOLERANCE</code> értékével állítható.</p>
                     <p className="mt-1">Használd a kurzort a jelenet vizsgálatához, és kattints a megtalált tárgyakra.</p>
+                    <p className="mt-1">A jelenet és a tárgyak képei mostantól helyi fájlokból töltődnek be.</p>
                 </footer>
             </div>
         </div>
