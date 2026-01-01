@@ -21,8 +21,7 @@ interface Coordinate {
 // Configuration constants
 const CONFIG = {
     // Image URL - can be local or remote
-    //SCENE_URL: "https://images.unsplash.com/photo-1503264116251-35a269479413?auto=format&fit=crop&w=1400&q=80",
-    SCENE_URL: "./images/map/camp2_1980.png", // Changed to local JPG
+    SCENE_URL: "./images/map/camp2_1980.png",
 
     // Game difficulty settings
     HIT_TOLERANCE: 0.06, // Distance tolerance for object detection
