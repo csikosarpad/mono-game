@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState, useCallback, useMemo } from 'react';
 import { cn } from '@mono-game/shared';
+import { GAME_CONFIG, INITIAL_OBJECTS, MESSAGES, TEXT } from './config/config';
 import './App.scss';
 
 // Type definitions for better type safety
@@ -17,41 +18,6 @@ interface Coordinate {
     x: number;
     y: number;
 }
-
-// Configuration constants
-const CONFIG = {
-    // Image URL - can be local or remote
-    SCENE_URL: "./images/map/camp2_1980.png",
-
-    // Game difficulty settings
-    HIT_TOLERANCE: 0.06, // Distance tolerance for object detection
-    MAX_COORDINATE: 0.98,
-    MIN_COORDINATE: 0.02,
-
-    // UI timing
-    SUCCESS_MESSAGE_DURATION: 2000,
-    ERROR_MESSAGE_DURATION: 700,
-
-    // Coordinate precision
-    COORDINATE_PRECISION: 2
-} as const;
-
-// Initial game objects configuration with image references
-const INITIAL_OBJECTS: Omit<GameObject, 'found'>[] = [
-    { id: "backpack", name: "Hátizsák", x: 0.41, y: 0.52, image: "./images/svg/backpack.svg" },
-    { id: "backpack_blue", name: "Kék hátizsák", x: 0.21, y: 0.52, image: "./images/svg/backpack_blue.svg" },
-    { id: "binoculars", name: "Távcső", x: 0.32, y: 0.28, image: "./images/svg/binoculars.svg" },
-    { id: "boots", name: "Bakancs", x: 0.85, y: 0.65, image: "./images/svg/boots.svg" },
-    { id: "bottle", name: "Kulacs", x: 0.55, y: 0.15, image: "./images/svg/bottle.svg" },
-    { id: "lamp2", name: "Lámpa", x: 0.18, y: 0.72, image: "./images/svg/lamp2.svg" },
-    { id: "campfire", name: "Tábortűz", x: 0.11, y: 0.42, image: "./images/svg/campfire.svg" },
-    { id: "piknik_kosar", name: "Piknik kosár", x: 0.75, y: 0.33, image: "./images/svg/piknik_kosar.svg" },
-    { id: "sajt", name: "Sajt", x: 0.36, y: 0.58, image: "./images/svg/sajt.svg" },
-    { id: "szendvics", name: "Szendvics", x: 0.26, y: 0.78, image: "./images/svg/szendvics.svg" },
-    { id: "termosz", name: "Termosz", x: 0.64, y: 0.18, image: "./images/svg/termosz.svg" },
-    { id: "wrench", name: "Kulcs", x: 0.47, y: 0.39, image: "./images/svg/wrench.svg" },
-
-];
 
 export default function App() {
     // State management
@@ -94,14 +60,14 @@ export default function App() {
                 newCoord = {
                     x: +(
                         Math.random() *
-                        (CONFIG.MAX_COORDINATE - CONFIG.MIN_COORDINATE) +
-                        CONFIG.MIN_COORDINATE
-                    ).toFixed(CONFIG.COORDINATE_PRECISION),
+                        (GAME_CONFIG.MAX_COORDINATE - GAME_CONFIG.MIN_COORDINATE) +
+                        GAME_CONFIG.MIN_COORDINATE
+                    ).toFixed(GAME_CONFIG.COORDINATE_PRECISION),
                     y: +(
                         Math.random() *
-                        (CONFIG.MAX_COORDINATE - CONFIG.MIN_COORDINATE) +
-                        CONFIG.MIN_COORDINATE
-                    ).toFixed(CONFIG.COORDINATE_PRECISION)
+                        (GAME_CONFIG.MAX_COORDINATE - GAME_CONFIG.MIN_COORDINATE) +
+                        GAME_CONFIG.MIN_COORDINATE
+                    ).toFixed(GAME_CONFIG.COORDINATE_PRECISION)
                 };
 
                 // Check for collision with existing coordinates
@@ -110,7 +76,7 @@ export default function App() {
                         Math.pow(newCoord.x - existing.x, 2) +
                         Math.pow(newCoord.y - existing.y, 2)
                     );
-                    return distance < CONFIG.HIT_TOLERANCE;
+                    return distance < GAME_CONFIG.HIT_TOLERANCE;
                 });
 
                 if (!hasCollision) {
@@ -123,8 +89,8 @@ export default function App() {
             // Fallback if we can't find a valid position
             if (!isValid) {
                 coords.push({
-                    x: +(Math.random() * (CONFIG.MAX_COORDINATE - CONFIG.MIN_COORDINATE) + CONFIG.MIN_COORDINATE).toFixed(CONFIG.COORDINATE_PRECISION),
-                    y: +(Math.random() * (CONFIG.MAX_COORDINATE - CONFIG.MIN_COORDINATE) + CONFIG.MIN_COORDINATE).toFixed(CONFIG.COORDINATE_PRECISION)
+                    x: +(Math.random() * (GAME_CONFIG.MAX_COORDINATE - GAME_CONFIG.MIN_COORDINATE) + GAME_CONFIG.MIN_COORDINATE).toFixed(GAME_CONFIG.COORDINATE_PRECISION),
+                    y: +(Math.random() * (GAME_CONFIG.MAX_COORDINATE - GAME_CONFIG.MIN_COORDINATE) + GAME_CONFIG.MIN_COORDINATE).toFixed(GAME_CONFIG.COORDINATE_PRECISION)
                 });
             }
         }
@@ -152,7 +118,7 @@ export default function App() {
     useEffect(() => {
         if (allObjectsFound && isGameActive) {
             //setMessage(`Gratulálok! Megtaláltál minden tárgyat ${timeElapsed}s alatt.`);
-            messageTimeoutRef.current = setTimeout(() => setMessage(`Gratulálok! Megtaláltál minden tárgyat ${timeElapsed}s alatt.`), CONFIG.SUCCESS_MESSAGE_DURATION);
+            messageTimeoutRef.current = setTimeout(() => setMessage(`Gratulálok! Megtaláltál minden tárgyat ${timeElapsed}s alatt.`), GAME_CONFIG.SUCCESS_MESSAGE_DURATION);
             setIsGameActive(false);
 
             if (timerRef.current) {
@@ -216,7 +182,7 @@ export default function App() {
                 const dy = obj.y - clickY;
                 const distance = Math.sqrt(dx * dx + dy * dy);
 
-                if (distance <= CONFIG.HIT_TOLERANCE) {
+                if (distance <= GAME_CONFIG.HIT_TOLERANCE) {
                     foundObject = true;
                     return { ...obj, found: true };
                 }
@@ -227,11 +193,11 @@ export default function App() {
 
         // Show appropriate message
         if (foundObject) {
-            setMessage("Talált!");
-            messageTimeoutRef.current = setTimeout(() => setMessage(""), CONFIG.SUCCESS_MESSAGE_DURATION);
+            setMessage(MESSAGES.SUCCESS);
+            messageTimeoutRef.current = setTimeout(() => setMessage(""), GAME_CONFIG.SUCCESS_MESSAGE_DURATION);
         } else {
-            setMessage("Nem itt — próbáld újra");
-            messageTimeoutRef.current = setTimeout(() => setMessage(""), CONFIG.ERROR_MESSAGE_DURATION);
+            setMessage(MESSAGES.NOT_HERE);
+            messageTimeoutRef.current = setTimeout(() => setMessage(""), GAME_CONFIG.ERROR_MESSAGE_DURATION);
         }
     }, [isGameActive]);
 
@@ -308,13 +274,13 @@ export default function App() {
                             onClick={startGame}
                             disabled={imageError}
                         >
-                            Új játék
+                            {TEXT.NEW_GAME}
                         </button>
                         <span className="text-sm text-gray-600 font-medium">
-                            Idő: {timeElapsed}s
+                            {TEXT.TIME(timeElapsed)}
                         </span>
                         <span className="text-sm text-gray-500">
-                            Hátralévő: {remainingObjects.length}/{objects.length}
+                            {TEXT.REMAINING(remainingObjects.length, objects.length)}
                         </span>
                     </div>
                 </header>
@@ -323,19 +289,19 @@ export default function App() {
                     {imageError ? (
                         <div className="aspect-[4/3] bg-gray-200 flex items-center justify-center text-gray-500">
                             <div className="text-center">
-                                <p>Kép betöltése sikertelen</p>
+                                <p>{TEXT.IMAGE_ERROR}</p>
                                 <button
                                     className="mt-2 px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
                                     onClick={startGame}
                                 >
-                                    Újra próbálkozás
+                                    {TEXT.RETRY_IMAGE}
                                 </button>
                             </div>
                         </div>
                     ) : (
                         <img
                             ref={imgRef}
-                            src={CONFIG.SCENE_URL}
+                            src={GAME_CONFIG.SCENE_URL}
                             alt="Játék jelenet"
                             onClick={handleClick}
                             onLoad={() => setImageError(false)}
@@ -359,7 +325,7 @@ export default function App() {
                 </div>
 
                 <aside className="mt-3 p-3 bg-white rounded shadow">
-                    <h2 className="font-medium mb-2">Megtalálandó tárgyak</h2>
+                    <h2 className="font-medium mb-2">{TEXT.OBJECTS}</h2>
                     <ul className="mt-2 space-y-1">
                         {renderObjectList}
                     </ul>
