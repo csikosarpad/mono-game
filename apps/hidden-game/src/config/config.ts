@@ -37,7 +37,7 @@ export const MESSAGES = {
     SUCCESS: "Talált!",
     NOT_HERE: "Nem itt — próbáld újra",
     GAME_COMPLETE: (time: number) => `Gratulálok! Megtaláltál minden tárgyat ${time}s alatt.`,
-    IMAGE_ERROR: "Kép betöltése sikertelen. Kérlek, ellenőrizd az internetkapcsolatot.",
+    MAP_ERROR: "Kép betöltése sikertelen. Kérlek, ellenőrizd az internetkapcsolatot.",
     RETRY_IMAGE: "Újra próbálkozás"
 } as const;
 

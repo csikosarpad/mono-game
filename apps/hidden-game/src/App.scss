@@ -1,7 +1,7 @@
-// App szintű stílusok
-@import '../../packages/shared-styles/mixins.scss';
+@use '../../packages/shared-styles/mixins';
 
+// App szintű stílusok
 .app-container {
     padding: 1rem;
-    @include center-flex;
+    @include mixins.center-flex;
 }

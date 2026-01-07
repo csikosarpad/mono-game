@@ -14,7 +14,7 @@ export default defineConfig({
     css: {
         preprocessorOptions: {
             scss: {
-                additionalData: `@import '@mono-game/shared-styles/tailwind.scss';`
+                additionalData: `@use '@mono-game/shared-styles/tailwind.scss';`
             },
         },
     },

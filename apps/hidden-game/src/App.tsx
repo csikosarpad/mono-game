@@ -1,23 +1,8 @@
 import React, { useEffect, useRef, useState, useCallback, useMemo } from 'react';
 import { cn } from '@mono-game/shared';
 import { GAME_CONFIG, INITIAL_OBJECTS, MESSAGES, TEXT } from './config/config';
+import { GameObject, Coordinate } from './config/types';
 import './App.scss';
-
-// Type definitions for better type safety
-interface GameObject {
-    id: string;
-    name: string;
-    x: number;
-    y: number;
-    rotation?: number;
-    found: boolean;
-    image?: string; // Optional image path for local assets
-}
-
-interface Coordinate {
-    x: number;
-    y: number;
-}
 
 export default function App() {
     // State management
@@ -27,7 +12,7 @@ export default function App() {
     const [startTime, setStartTime] = useState<number | null>(null);
     const [timeElapsed, setTimeElapsed] = useState(0);
     const [message, setMessage] = useState("");
-    const [isGameActive, setIsGameActive] = useState(false);
+    const [isGameActive, setIsGameActive] = useState(true);
     const [imageError, setImageError] = useState(false);
 
     // Refs for DOM elements and timers
@@ -117,8 +102,7 @@ export default function App() {
     // Game completion logic
     useEffect(() => {
         if (allObjectsFound && isGameActive) {
-            //setMessage(`Gratulálok! Megtaláltál minden tárgyat ${timeElapsed}s alatt.`);
-            messageTimeoutRef.current = setTimeout(() => setMessage(`Gratulálok! Megtaláltál minden tárgyat ${timeElapsed}s alatt.`), GAME_CONFIG.SUCCESS_MESSAGE_DURATION);
+            messageTimeoutRef.current = setTimeout(() => setMessage(MESSAGES.GAME_COMPLETE(timeElapsed)), GAME_CONFIG.SUCCESS_MESSAGE_DURATION);
             setIsGameActive(false);
 
             if (timerRef.current) {
@@ -158,10 +142,15 @@ export default function App() {
         setImageError(false);
     }, [generateRandomCoordinates]);
 
+    // Initialize game on mount
+    useEffect(() => {
+        startGame();
+    }, [startGame]);
+
     // Handle image loading errors
     const handleImageError = useCallback(() => {
         setImageError(true);
-        setMessage("Kép betöltése sikertelen. Kérlek, ellenőrizd az internetkapcsolatot.");
+        setMessage(MESSAGES.MAP_ERROR);
     }, []);
 
     // Handle click interactions
@@ -201,8 +190,7 @@ export default function App() {
         }
     }, [isGameActive]);
 
-    // Render object markers with images
-    const renderObjectMarkers = useMemo(() => {
+    const populateMysteryItems = useMemo(() => {
         return objects.map(obj => (
             <div
                 key={obj.id}
@@ -210,20 +198,10 @@ export default function App() {
                 style={{
                     left: `${obj.x * 100}%`,
                     top: `${obj.y * 100}%`,
-                    //opacity: obj.found ? 1 : 0.5
                 }}
                 aria-hidden="true"
             >
                 {obj.found ? (
-                    // <img src={obj.image}
-                    //     alt={obj.name}
-                    //     className={cn("w-16 h-16 object-contain scale-120",
-                    //         "animate-pulse",
-                    //         `rotate-[${obj.rotation}deg]`,
-                    //     )}
-                    //     title={`Talált: ${obj.name}`}
-                    //     style={{ filter: 'drop-shadow(0 2px 2px rgba(255,255,255,0.95))' }}
-                    // />
                     <></>
                 ) : (
                     obj.image ? (
@@ -312,8 +290,7 @@ export default function App() {
                         />
                     )}
 
-                    {/* Object markers */}
-                    {renderObjectMarkers}
+                    {populateMysteryItems}
                     {message && (
                         <div
                             className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-black bg-opacity-60 text-white px-4 py-2 rounded text-center text-xl font-medium"
@@ -342,9 +319,8 @@ export default function App() {
                 </aside>
 
                 <footer className="mt-4 text-xs text-gray-500">
-                    <p>Tippek: A találati pontosság a <code className="bg-gray-100 px-1 rounded">HIT_TOLERANCE</code> értékével állítható.</p>
+                    {/* <p>Tippek: A találati pontosság a <code className="bg-gray-100 px-1 rounded">HIT_TOLERANCE</code> értékével állítható.</p> */}
                     <p className="mt-1">Használd a kurzort a jelenet vizsgálatához, és kattints a megtalált tárgyakra.</p>
-                    <p className="mt-1">A jelenet és a tárgyak képei mostantól helyi fájlokból töltődnek be.</p>
                 </footer>
             </div>
         </div>
