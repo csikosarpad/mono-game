@@ -1,7 +1,7 @@
 // Game configuration and constants
 export const GAME_CONFIG = {
     // Image URL - can be local or remote
-    SCENE_URL: "./images/map/camp2_1980.png",
+    SCENE_URL: ["./images/map/camp_1980.png", "./images/map/camp2_1980.png", "./images/map/dunapart.png"],
 
     // Game difficulty settings
     HIT_TOLERANCE: 0.06, // Distance tolerance for object detection
@@ -42,11 +42,12 @@ export const MESSAGES = {
 } as const;
 
 export const TEXT = {
+    GAME_TITLE: "Elrejtett tárgyak",
     NEW_GAME: "Új játék",
     TIME: (timeElapsed: number) => `Idő: ${timeElapsed}s`,
     REMAINING: (remaining: number, total: number) => `Hátralévő: ${remaining}/${total}`,
     RETRY_IMAGE: "Újra próbálkozás",
     IMAGE_ERROR: "Kép betöltése sikertelen. Kérlek, ellenőrizd az internetkapcsolatot.",
-    OBJECTS: "Megtalálandó tárgyak"
+    OBJECTS: "Amit elrejtettünk",
 
 } as const;

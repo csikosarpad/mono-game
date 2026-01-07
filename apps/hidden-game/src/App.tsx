@@ -9,6 +9,7 @@ export default function App() {
     const [objects, setObjects] = useState<GameObject[]>(
         INITIAL_OBJECTS.map(obj => ({ ...obj, found: false }))
     );
+    const [gameMap, setGameMap] = useState<string | null>(null);
     const [startTime, setStartTime] = useState<number | null>(null);
     const [timeElapsed, setTimeElapsed] = useState(0);
     const [message, setMessage] = useState("");
@@ -30,6 +31,16 @@ export default function App() {
         objects.filter(obj => !obj.found),
         [objects]
     );
+
+    const getMapUrl = useCallback((): string => {
+        const urls = GAME_CONFIG.SCENE_URL;
+        return urls[Math.floor(Math.random() * urls.length)];
+    }, []);
+
+    const ACTUAL_GAME_MAP = useMemo(() => {
+        const urls = GAME_CONFIG.SCENE_URL;
+        return urls[Math.floor(Math.random() * urls.length)];
+    }, []);
 
     // Coordinate generation with better randomness and collision avoidance
     const generateRandomCoordinates = useCallback((): Coordinate[] => {
@@ -135,6 +146,7 @@ export default function App() {
         }));
 
         setObjects(newObjects);
+        setGameMap(getMapUrl());
         setStartTime(Date.now());
         setTimeElapsed(0);
         setMessage("");
@@ -225,10 +237,11 @@ export default function App() {
             <li
                 key={obj.id}
                 className={cn(
-                    "transition-colors duration-200 flex items-center gap-2",
-                    obj.found ? 'line-through text-gray-400' : 'text-gray-900'
+                    "transition-colors duration-200 flex items-center gap-2 shrink-0 border-r-2 last:border-r-0 pr-2",
+                    obj.found ? "line-through text-gray-400" : "text-gray-900"
                 )}
             >
+
                 {obj.image && (
                     <img
                         src={obj.image}
@@ -245,7 +258,7 @@ export default function App() {
         <div className="min-h-screen flex flex-col items-center p-4 bg-gray-50">
             <div className="w-full max-w-3xl">
                 <header className="flex items-center justify-between mb-3">
-                    <h1 className="text-2xl font-semibold">Hidden Object — Játék</h1>
+                    <h1 className="text-2xl font-semibold">{TEXT.GAME_TITLE}</h1>
                     <div className="space-x-2 flex items-center">
                         <button
                             className="px-3 py-1 rounded shadow bg-white hover:bg-gray-50 transition-colors"
@@ -279,7 +292,7 @@ export default function App() {
                     ) : (
                         <img
                             ref={imgRef}
-                            src={GAME_CONFIG.SCENE_URL}
+                            src={gameMap || ACTUAL_GAME_MAP}
                             alt="Játék jelenet"
                             onClick={handleClick}
                             onLoad={() => setImageError(false)}
@@ -303,9 +316,10 @@ export default function App() {
 
                 <aside className="mt-3 p-3 bg-white rounded shadow">
                     <h2 className="font-medium mb-2">{TEXT.OBJECTS}</h2>
-                    <ul className="mt-2 space-y-1">
+                    <ul className="mt-2 flex flex-row space-x-3 overflow-x-auto whitespace-nowrap">
                         {renderObjectList}
                     </ul>
+
 
                     {message && (
                         <div
