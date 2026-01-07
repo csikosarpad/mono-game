@@ -1,11 +1,15 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
-// import '@mono-game/shared-styles/tailwind.scss';
-// import '@mono-game/shared-styles/mixins.scss';
+import { ThemeProvider } from './theme/ThemeContext';
+import { AudioProvider } from './audio/AudioContext';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
     <React.StrictMode>
-        <App />
+        <ThemeProvider>
+            <AudioProvider>
+                <App />
+            </AudioProvider>
+        </ThemeProvider>
     </React.StrictMode>
 );
