@@ -11,7 +11,9 @@
     "prettier": "prettier --write .",
     "test": "vitest",
     "test:coverage": "vitest run --coverage",
-    "coverage:open": "start coverage/index.html"
+    "coverage:open": "start coverage/index.html",
+    "homepage": "https://csikosarpad.github.io/mono-game",
+    "deploy": "gh-pages -d build"
   },
   "devDependencies": {
     "@types/node": "^25.0.3",
