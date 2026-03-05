@@ -2,6 +2,9 @@ import React, { useEffect, useRef, useState, useCallback, useMemo } from 'react'
 import { cn } from '@mono-game/shared';
 import { GAME_CONFIG, INITIAL_OBJECTS, MESSAGES, TEXT } from './config/config';
 import { GameObject, Coordinate } from './config/types';
+import { ThemeToggle } from './theme/ThemeToggle';
+import { MusicToggle } from './audio/MusicToggle';
+import { useAudio } from './audio/AudioContext';
 import './App.scss';
 
 export default function App() {
@@ -15,6 +18,9 @@ export default function App() {
     const [message, setMessage] = useState("");
     const [isGameActive, setIsGameActive] = useState(true);
     const [imageError, setImageError] = useState(false);
+
+    // Audio context
+    const { playSound } = useAudio();
 
     // Refs for DOM elements and timers
     const imgRef = useRef<HTMLImageElement | null>(null);
@@ -113,6 +119,7 @@ export default function App() {
     // Game completion logic
     useEffect(() => {
         if (allObjectsFound && isGameActive) {
+            playSound('purchase');
             messageTimeoutRef.current = setTimeout(() => setMessage(MESSAGES.GAME_COMPLETE(timeElapsed)), GAME_CONFIG.SUCCESS_MESSAGE_DURATION);
             setIsGameActive(false);
 
@@ -192,12 +199,14 @@ export default function App() {
             })
         );
 
-        // Show appropriate message
+        // Show appropriate message and play sound effects
         if (foundObject) {
             setMessage(MESSAGES.SUCCESS);
+            playSound('success');
             messageTimeoutRef.current = setTimeout(() => setMessage(""), GAME_CONFIG.SUCCESS_MESSAGE_DURATION);
         } else {
             setMessage(MESSAGES.NOT_HERE);
+            playSound('error');
             messageTimeoutRef.current = setTimeout(() => setMessage(""), GAME_CONFIG.ERROR_MESSAGE_DURATION);
         }
     }, [isGameActive]);
@@ -255,30 +264,33 @@ export default function App() {
     }, [objects]);
 
     return (
-        <div className="min-h-screen flex flex-col items-center p-4 bg-gray-50">
+        <div className="min-h-screen flex flex-col items-center p-4 bg-game-bg transition-colors duration-300">
             <div className="w-full max-w-3xl">
                 <header className="flex items-center justify-between mb-3">
-                    <h1 className="text-2xl font-semibold">{TEXT.GAME_TITLE}</h1>
+                    <h1 className="text-2xl font-semibold text-game-text">{TEXT.GAME_TITLE}</h1>
                     <div className="space-x-2 flex items-center">
+
+                        <span className="text-sm text-game-text font-medium">
+                            {TEXT.TIME(timeElapsed)}
+                        </span>
+                        <span className="text-sm text-gray-500 dark:text-gray-400">
+                            {TEXT.REMAINING(remainingObjects.length, objects.length)}
+                        </span>
                         <button
-                            className="px-3 py-1 rounded shadow bg-white hover:bg-gray-50 transition-colors"
+                            className="px-3 py-1 rounded shadow bg-game-card hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-game-text"
                             onClick={startGame}
                             disabled={imageError}
                         >
                             {TEXT.NEW_GAME}
                         </button>
-                        <span className="text-sm text-gray-600 font-medium">
-                            {TEXT.TIME(timeElapsed)}
-                        </span>
-                        <span className="text-sm text-gray-500">
-                            {TEXT.REMAINING(remainingObjects.length, objects.length)}
-                        </span>
+                        <MusicToggle />
+                        <ThemeToggle />
                     </div>
                 </header>
 
-                <div className="relative border rounded overflow-hidden bg-white shadow-sm">
+                <div className="relative border rounded overflow-hidden bg-game-card shadow-sm border-game-border">
                     {imageError ? (
-                        <div className="aspect-[4/3] bg-gray-200 flex items-center justify-center text-gray-500">
+                        <div className="aspect-[4/3] bg-gray-200 dark:bg-gray-800 flex items-center justify-center text-gray-500 dark:text-gray-400">
                             <div className="text-center">
                                 <p>{TEXT.IMAGE_ERROR}</p>
                                 <button
@@ -314,8 +326,8 @@ export default function App() {
 
                 </div>
 
-                <aside className="mt-3 p-3 bg-white rounded shadow">
-                    <h2 className="font-medium mb-2">{TEXT.OBJECTS}</h2>
+                <aside className="mt-3 p-3 bg-game-card rounded shadow border border-game-border">
+                    <h2 className="font-medium mb-2 text-game-text">{TEXT.OBJECTS}</h2>
                     <ul className="mt-2 flex flex-row space-x-3 overflow-x-auto whitespace-nowrap">
                         {renderObjectList}
                     </ul>
@@ -323,7 +335,7 @@ export default function App() {
 
                     {message && (
                         <div
-                            className="mt-3 text-sm font-medium transition-opacity duration-300"
+                            className="mt-3 text-sm font-medium transition-opacity duration-300 text-game-text"
                             role="status"
                             aria-live="polite"
                         >
@@ -332,8 +344,7 @@ export default function App() {
                     )}
                 </aside>
 
-                <footer className="mt-4 text-xs text-gray-500">
-                    {/* <p>Tippek: A találati pontosság a <code className="bg-gray-100 px-1 rounded">HIT_TOLERANCE</code> értékével állítható.</p> */}
+                <footer className="mt-4 text-xs text-gray-500 dark:text-gray-400">
                     <p className="mt-1">Használd a kurzort a jelenet vizsgálatához, és kattints a megtalált tárgyakra.</p>
                 </footer>
             </div>

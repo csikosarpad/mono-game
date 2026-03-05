@@ -5,3 +5,21 @@
     padding: 1rem;
     @include mixins.center-flex;
 }
+
+// Dark mode specific styles for the game objects
+.dark {
+    .mystery-item {
+        filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.5));
+    }
+}
+
+// Ensure proper contrast for text in dark mode
+.dark {
+    .object-list-item {
+        color: #e5e7eb;
+    }
+
+    .object-list-item.found {
+        color: #9ca3af;
+    }
+}

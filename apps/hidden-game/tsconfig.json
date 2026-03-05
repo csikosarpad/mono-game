@@ -2,7 +2,26 @@
   "extends": "../../tsconfig.json",
   "compilerOptions": {
     "jsx": "react-jsx",
-    "types": ["vitest/globals"]
+    "jsxImportSource": "react",
+    "types": ["vitest/globals", "node"],
+    "lib": ["DOM", "DOM.Iterable", "ESNext"],
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true
   },
-  "include": ["src/**/*", "src/**/*.test.ts", "src/**/*.test.tsx"]
+  "include": ["src/**/*", "src/**/*.test.ts", "src/**/*.test.tsx"],
+  "references": [
+    { "path": "../../packages/shared" },
+    { "path": "../../packages/shared-ui" },
+    { "path": "../../packages/shared-styles" }
+  ]
 }
