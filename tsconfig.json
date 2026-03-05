@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "ESNext",
+    "declaration": true,
+    "declarationMap": true,
+    "outDir": "./dist",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true
+  },
+  "include": ["packages/**/*", "apps/**/*"],
+  "exclude": ["node_modules", "dist"],
+  "alias": {
+    "@shared/*": ["packages/shared/*"],
+    "@shared-ui/*": ["packages/shared-ui/*"],
+    "@shared-styles/*": ["packages/shared-styles/*"]
+  }
+}

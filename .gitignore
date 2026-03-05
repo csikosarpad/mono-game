@@ -1,0 +1,22 @@
+# pnpm
+node_modules
+.pnpm
+
+# Logs
+logs
+*.log
+
+# Editor
+.vscode
+.idea
+.DS_Store
+.vite
+
+# Build
+/dist
+/build
+/apps/*/dist
+/apps/*/build
+
+# Testing
+/coverage

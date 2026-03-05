@@ -1,0 +1,10 @@
+{
+  "name": "@mono-game/shared-styles",
+  "version": "1.0.0",
+  "main": "index.scss",
+  "private": true,
+  "devDependencies": {
+    "@vitejs/plugin-react": "^5.1.2",
+    "sass": "^1.70.0"
+  }
+}
